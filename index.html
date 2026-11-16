@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>🔢 Math Fun for Kids!</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 50%, #dbeafe 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Comic Sans MS', 'Segoe UI', sans-serif;
+    color: #1f2937;
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
+  .app {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 16px 0;
+  }
+  .mascot {
+    font-size: 60px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .title {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 4px;
+  }
+  .stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 8px 18px;
+    border-radius: 24px;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 3px solid #fbbf24;
+    font-size: 22px;
+    font-weight: 800;
+    color: #b45309;
+  }
+
+  /* Mode buttons (start screen) */
+  .mode-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px 0;
+  }
+  .mode-btn {
+    width: 100%;
+    max-width: 380px;
+    padding: 24px 20px;
+    border: none;
+    border-radius: 24px;
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: transform 0.1s;
+    font-family: inherit;
+  }
+  .mode-btn:active { transform: scale(0.96); }
+  .mode-btn .icon { font-size: 40px; }
+  .mode-btn.add { background: linear-gradient(135deg, #10b981, #059669); }
+  .mode-btn.sub { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .mode-btn.mul { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+  /* Game screen */
+  .game-screen { display: none; flex: 1; flex-direction: column; }
+  .game-screen.show { display: flex; }
+
+  .question-card {
+    background: white;
+    border-radius: 28px;
+    padding: 32px 24px;
+    margin: 16px 0;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 4px solid #fde68a;
+  }
+  .visual {
+    font-size: 40px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    min-height: 60px;
+  }
+  .visual .emoji-row {
+    display: inline-block;
+    margin: 0 4px;
+  }
+  .op {
+    font-size: 36px;
+    font-weight: 800;
+    color: #6b7280;
+    margin: 0 8px;
+  }
+  .question-text {
+    font-size: 38px;
+    font-weight: 800;
+    color: #1f2937;
+    margin-top: 12px;
+  }
+  .question-text .qmark {
+    color: #ec4899;
+    font-size: 44px;
+  }
+
+  /* Answer buttons */
+  .answers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .answer-btn {
+    padding: 28px 12px;
+    border: 4px solid #e5e7eb;
+    border-radius: 20px;
+    background: white;
+    font-size: 36px;
+    font-weight: 800;
+    color: #1f2937;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .answer-btn:active { transform: scale(0.94); }
+  .answer-btn.correct {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-color: #10b981;
+    animation: pop 0.4s;
+  }
+  .answer-btn.wrong {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-color: #ef4444;
+    animation: shake 0.4s;
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  /* Feedback */
+  .feedback {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    min-height: 32px;
+    margin: 10px 0;
+    transition: all 0.3s;
+  }
+  .feedback.success { color: #10b981; }
+  .feedback.tryagain { color: #f59e0b; }
+
+  /* Bottom buttons */
+  .bottom-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .bottom-btn {
+    flex: 1;
+    padding: 14px 12px;
+    border: none;
+    border-radius: 16px;
+    background: #1e293b;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .bottom-btn:active { transform: scale(0.96); }
+  .bottom-btn.home { background: #6b7280; }
+  .bottom-btn.next { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
+
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    top: -20px;
+    width: 12px;
+    height: 12px;
+    z-index: 100;
+    pointer-events: none;
+    animation: fall 2s linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); }
+  }
+
+  /* Streak indicator */
+  .streak {
+    text-align: center;
+    font-size: 16px;
+    color: #6b7280;
+    margin-top: 6px;
+    min-height: 20px;
+  }
+  .streak.fire { color: #ef4444; font-weight: 800; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header (always visible) -->
+  <div class="header">
+    <div class="mascot">🦉</div>
+    <div class="title">Math Fun!</div>
+    <div class="stars">
+      <span>⭐</span>
+      <span id="starCount">0</span>
+    </div>
+  </div>
+
+  <!-- Start screen: pick a mode -->
+  <div class="mode-screen" id="modeScreen">
+    <button class="mode-btn add" onpointerdown="startGame('add')">
+      <span class="icon">➕</span>
+      <span>Addition<br><small style="font-size:14px;opacity:0.85">1+1, 2+3, ...</small></span>
+    </button>
+    <button class="mode-btn sub" onpointerdown="startGame('sub')">
+      <span class="icon">➖</span>
+      <span>Subtraction<br><small style="font-size:14px;opacity:0.85">5-2, 8-3, ...</small></span>
+    </button>
+    <button class="mode-btn mul" onpointerdown="startGame('mul')">
+      <span class="icon">✖️</span>
+      <span>2 Times Table<br><small style="font-size:14px;opacity:0.85">2×1, 2×2, ...</small></span>
+    </button>
+  </div>
+
+  <!-- Game screen -->
+  <div class="game-screen" id="gameScreen">
+    <div class="question-card">
+      <div class="visual" id="visual"></div>
+      <div class="question-text" id="questionText"></div>
+    </div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="streak" id="streak"></div>
+    <div class="bottom-row">
+      <button class="bottom-btn home" onpointerdown="goHome()">🏠 Home</button>
+      <button class="bottom-btn next" id="nextBtn" onpointerdown="nextQuestion()">▶ Next Question</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   MATH FUN - Math game for 4-year-olds
+   Three modes: Addition, Subtraction, Multiplication (2x table)
+   ============================================================ */
+
+let mode = 'add';     // 'add', 'sub', or 'mul'
+let stars = 0;
+let streak = 0;
+let currentAnswer = 0;
+let answered = false;
+
+// Friendly emojis for visual aids (fruits and animals)
+const EMOJIS = ['🍎', '🍌', '🌟', '🐶', '🐱', '🦋', '🐟', '🎈', '🍪', '⭐', '🌸', '🦄'];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function startGame(m) {
+  mode = m;
+  document.getElementById('modeScreen').style.display = 'none';
+  document.getElementById('gameScreen').classList.add('show');
+  nextQuestion();
+}
+
+function goHome() {
+  document.getElementById('gameScreen').classList.remove('show');
+  document.getElementById('modeScreen').style.display = 'flex';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('streak').textContent = '';
+}
+
+function nextQuestion() {
+  answered = false;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextBtn').style.opacity = '0.5';
+
+  let a, b, op, visual, qText;
+
+  if (mode === 'add') {
+    // Addition: small numbers 1-5
+    a = Math.floor(Math.random() * 5) + 1;  // 1-5
+    b = Math.floor(Math.random() * 5) + 1;  // 1-5
+    currentAnswer = a + b;
+    op = '+';
+    const emoji = pick(EMOJIS);
+    visual = `<span class="emoji-row">${emoji.repeat(a)}</span> <span class="op">+</span> <span class="emoji-row">${emoji.repeat(b)}</span>`;
+    qText = `${a} ${op} ${b} = <span class="qmark">?</span>`;
+  }
+  else if (mode === 'sub') {
+    // Subtraction: small numbers, a > b
+    a = Math.floor(Math.random() * 5) + 3;  // 3-7
+    b = Math.floor(Math.random() * (a - 1)) + 1;  // 1 to a-1
+    currentAnswer = a - b;
+    op = '-';
+    const emoji = pick(EMOJIS);
+    // Show a emojis, then cross out b of them
+    let kept = a - b;
+    visual = `<span class="emoji-row">${emoji.repeat(kept)}</span><span style="opacity:0.3;text-decoration:line-through">${emoji.repeat(b)}</span> <span class="op">-</span> <span class="emoji-row">${emoji.repeat(b)}</span>`;
+    qText = `${a} ${op} ${b} = <span class="qmark">?</span>`;
+  }
+  else if (mode === 'mul') {
+    // Multiplication: 2 times table (2 x 1 to 2 x 10)
+    a = 2;
+    b = Math.floor(Math.random() * 10) + 1;  // 1-10
+    currentAnswer = a * b;
+    op = '×';
+    const emoji = pick(EMOJIS);
+    // Show 2 groups of b emojis (visual multiplication)
+    visual = `<span class="emoji-row">${emoji.repeat(b)}</span> <span class="op">+</span> <span class="emoji-row">${emoji.repeat(b)}</span>`;
+    qText = `${a} ${op} ${b} = <span class="qmark">?</span>`;
+  }
+
+  document.getElementById('visual').innerHTML = visual;
+  document.getElementById('questionText').innerHTML = qText;
+
+  // Generate 3 answer options (one correct + 2 close wrong answers)
+  const options = new Set([currentAnswer]);
+  while (options.size < 3) {
+    let delta = Math.floor(Math.random() * 3) + 1;
+    if (Math.random() < 0.5) delta = -delta;
+    const wrong = currentAnswer + delta;
+    if (wrong > 0 && wrong !== currentAnswer) options.add(wrong);
+  }
+  // Shuffle
+  const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
+
+  const answersEl = document.getElementById('answers');
+  answersEl.innerHTML = shuffled.map(n =>
+    `<button class="answer-btn" onpointerdown="checkAnswer(${n}, this)">${n}</button>`
+  ).join('');
+}
+
+function checkAnswer(n, btn) {
+  if (answered) return;
+  answered = true;
+  document.getElementById('nextBtn').style.opacity = '1';
+
+  if (n === currentAnswer) {
+    btn.classList.add('correct');
+    stars++;
+    streak++;
+    document.getElementById('starCount').textContent = stars;
+    const praises = ['🎉 Great job!', '⭐ Awesome!', '🌟 You did it!', '🎈 Wonderful!', '✨ Yay! Correct!', '🏆 Smart kid!'];
+    document.getElementById('feedback').textContent = pick(praises);
+    document.getElementById('feedback').className = 'feedback success';
+
+    // Streak indicator
+    const streakEl = document.getElementById('streak');
+    if (streak >= 3) {
+      streakEl.textContent = `🔥 ${streak} in a row! Amazing!`;
+      streakEl.className = 'streak fire';
+    } else {
+      streakEl.textContent = streak > 1 ? `${streak} correct in a row!` : '';
+      streakEl.className = 'streak';
+    }
+
+    // Confetti for streaks of 3+
+    if (streak >= 3) makeConfetti();
+
+    // Auto-advance after 1.4 seconds
+    setTimeout(() => {
+      if (answered) nextQuestion();
+    }, 1400);
+  } else {
+    btn.classList.add('wrong');
+    streak = 0;
+    const encouragements = ['💪 Try again!', '😊 Almost! Pick another!', '🤗 You can do it!', '🌟 Try once more!'];
+    document.getElementById('feedback').textContent = pick(encouragements);
+    document.getElementById('feedback').className = 'feedback tryagain';
+    document.getElementById('streak').textContent = '';
+    document.getElementById('streak').className = 'streak';
+    // Allow trying again - reset answered after a moment
+    setTimeout(() => { answered = false; }, 600);
+  }
+}
+
+function makeConfetti() {
+  const colors = ['#ec4899', '#fbbf24', '#10b981', '#3b82f6', '#a78bfa', '#f97316'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = pick(colors);
+    c.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+    c.style.animationDelay = (Math.random() * 0.3) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+</script>
+
+</body>
+</html>
