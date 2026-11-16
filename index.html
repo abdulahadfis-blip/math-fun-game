@@ -551,12 +551,9 @@ function makeConfetti() {
    VIDEO: YouTube embed of 2 times table songs for kids
    ============================================================ */
 
-// Kid-friendly videos that just SPEAK the 2 times table (no pop song covers)
+// Kid-friendly video that just SPEAKS the 2 times table (no pop song covers)
 const VIDEOS = [
-  { id: 'zbSoc3YBHF8', title: 'Table of Two - Simple Recitation' },
   { id: '-huQ2P77YTk', title: '2 Times Table - Easy Peasy Maths' },
-  { id: '8hN9Ur_xdm0', title: '2 Times Table - Silly School Songs' },
-  { id: 'iiR8hqJeQsw', title: 'Multiply by 2 - Jack Hartmann' },
 ];
 let currentVideoIdx = 0;
 
@@ -585,6 +582,13 @@ function loadVideo(idx) {
 
 function buildVideoPicker() {
   const picker = document.getElementById('videoPicker');
+  // Hide picker if only 1 video (nothing to switch between)
+  if (VIDEOS.length <= 1) {
+    picker.innerHTML = '';
+    picker.style.display = 'none';
+    return;
+  }
+  picker.style.display = 'flex';
   picker.innerHTML = VIDEOS.map((v, i) =>
     `<button class="video-pick-btn ${i === currentVideoIdx ? 'active' : ''}" onpointerdown="loadVideo(${i})">${i + 1}. ${v.title}</button>`
   ).join('');
