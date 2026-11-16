@@ -552,8 +552,9 @@ function makeConfetti() {
    ============================================================ */
 
 // Kid-friendly video that just SPEAKS the 2 times table (no pop song covers)
+// start/end: video plays from 0:14 to 2:51 (14s to 171s)
 const VIDEOS = [
-  { id: '-huQ2P77YTk', title: '2 Times Table - Easy Peasy Maths' },
+  { id: '-huQ2P77YTk', title: '2 Times Table - Easy Peasy Maths', start: 14, end: 171 },
 ];
 let currentVideoIdx = 0;
 
@@ -574,7 +575,10 @@ function loadVideo(idx) {
   currentVideoIdx = idx;
   const v = VIDEOS[idx];
   // Use youtube-nocookie.com for kid-safe embed (no tracking, no related videos)
-  const src = `https://www.youtube-nocookie.com/embed/${v.id}?rel=0&modestbranding=1&autoplay=1`;
+  // start/end: video plays only from v.start to v.end (in seconds)
+  let src = `https://www.youtube-nocookie.com/embed/${v.id}?rel=0&modestbranding=1&autoplay=1`;
+  if (v.start) src += `&start=${v.start}`;
+  if (v.end) src += `&end=${v.end}`;
   document.getElementById('videoFrame').src = src;
   document.getElementById('videoTitle').textContent = '📺 ' + v.title;
   buildVideoPicker();
